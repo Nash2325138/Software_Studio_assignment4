@@ -10,7 +10,7 @@ public class GameStage extends AbstractGameStage implements Runnable{
 
 	public GameStage() {
 		// TODO Auto-generated constructor stub
-		windowHeight = 600;
+		windowHeight = 500;
 		typingWidth = 400;
 		displayWidth = 800;
 		
