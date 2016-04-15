@@ -2,17 +2,26 @@ package assignment4;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class TypingPanel extends JPanel {
 	private JTextField textField;
-	public TypingPanel(Rectangle rec) {
+	private BufferedImage bufferedImage;
+	private GameStage gs;
+	public TypingPanel(Rectangle rec, GameStage gs) {
 		// TODO Auto-generated constructor stub
+		this.gs = gs;
+		
 		this.setOpaque(true);
 		this.setLayout(null);
 		this.setBackground(Color.CYAN);
@@ -30,5 +39,10 @@ public class TypingPanel extends JPanel {
 		});
 		this.add(textField);
 		
+	}
+	@Override
+	protected void paintComponent(Graphics g) {
+		// TODO Auto-generated method stub
+		super.paintComponent(g);
 	}
 }
