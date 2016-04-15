@@ -1,10 +1,8 @@
 package assignment4;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 
-import javax.swing.JPanel;
 
 public class GameStage extends AbstractGameStage implements Runnable{
 
@@ -23,6 +21,7 @@ public class GameStage extends AbstractGameStage implements Runnable{
 		
 		this.add(typingPanel);
 		this.add(displayPanel);
+		new Thread(displayPanel).start();
 		this.setVisible(true);
 	}
 	@Override
