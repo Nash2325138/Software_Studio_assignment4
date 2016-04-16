@@ -22,10 +22,6 @@ public class DisplayPanel extends JPanel implements Runnable {
 	GameStage gs;
 	YellowDuck duck;
 	private class YellowDuck extends JPanel{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
 		private int X, Y;
 		private final int anchorY;
 		private BufferedImage image;
@@ -34,26 +30,26 @@ public class DisplayPanel extends JPanel implements Runnable {
 		public YellowDuck(GameStage gs) {
 			// TODO Auto-generated constructor stub
 			this.gs = gs;
-			this.setLayout(new FlowLayout());
-			this.setPreferredSize(new Dimension(50, 50));;
 			try{
 				image = ImageIO.read(new File("./materials/res/duck.png"));
 			} catch(IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("YellowDuck constructed");
-			X = gs.getDisplayWidth()/2-200;
+			X = gs.getDisplayWidth()/2-150;
 			Y = anchorY = 350;
+			System.out.println("YellowDuck constructed");
 			direction = DuckDirection.UP;
-			this.setOpaque(true);
+			this.setBounds(gs.getTypingWidth() + X, Y, image.getWidth(), image.getHeight());
 			this.setVisible(true);
+			this.setOpaque(false);
 		}
 		@Override
 		protected void paintComponent(Graphics g) {
 			// TODO Auto-generated method stub
 			super.paintComponent(g);
 			System.out.println("inner paintComponent");
-			g.drawImage(image, gs.getTypingWidth() + X, Y, null);
+			this.setBounds(gs.getTypingWidth() + X, Y, image.getWidth(), image.getHeight());
+			g.drawImage(image, 0, 0, null);
 		}
 	}
 	
