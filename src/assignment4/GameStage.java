@@ -1,13 +1,9 @@
 package assignment4;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
-import java.lang.Thread.State;
 
 import javax.imageio.ImageIO;
 
@@ -29,7 +25,10 @@ public class GameStage extends AbstractGameStage {
 		this.add(typingPanel);
 		this.add(displayPanel);
 		this.setSize(new Dimension(typingWidth+displayWidth, windowHeight));
-
+		
+		this.typingThread = new Thread(typingPanel);
+		this.displayThread = new Thread(displayPanel);
+		
 		try {
 			winImage = ImageIO.read(new File("./materials/res/win.png"));
 		} catch (IOException e) {
@@ -38,23 +37,23 @@ public class GameStage extends AbstractGameStage {
 	}
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub		
+		// TODO Auto-generated method stub
 		
-		
-		new Thread(typingPanel).start();
-		new Thread(displayPanel).start();
+		typingThread.start();
+		displayThread.start();
 		this.setVisible(true);
 	}
 
 	@Override
 	public void replay() {
 		// TODO Auto-generated method stub
-
+		
 	}
 	@Override
 	public void end() {
 		// TODO Auto-generated method stub
-		
+
 	}
+	
 	
 }

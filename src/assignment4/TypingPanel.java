@@ -159,6 +159,8 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 			}
 		} else if(gs.state==GameState.RUNNING){
 			if(e.getKeyCode()==KeyEvent.VK_ENTER){
+				//gs.addScore(4);
+				//if(gs.currentScore > 0)return;
 				String line = textField.getText();
 				String[] str = line.split(" ");
 				if(str.length != 2){

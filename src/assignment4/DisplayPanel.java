@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.sql.rowset.BaseRowSet;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -115,5 +116,15 @@ public class DisplayPanel extends JPanel implements Runnable {
 	}
 	public void updateScore(int newScore){
 		scoreLabel.setText("Score " + newScore);
+	}
+	public void duckSwim() {
+		// TODO Auto-generated method stub
+		if(gs.currentScore <= gs.winScore - 40){
+			bgShiftX-=15;
+			ballX-=24;
+		} else {
+			duck.X+=25;
+		}
+		repaint();
 	}
 }

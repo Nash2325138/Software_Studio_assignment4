@@ -2,11 +2,8 @@ package assignment4;
 
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 enum GameState{
 	BEGINNING, RUNNING, END
@@ -19,6 +16,7 @@ public abstract class AbstractGameStage extends JFrame{
 	protected TypingPanel typingPanel;
 	protected DisplayPanel displayPanel;
 	protected BufferedImage winImage;
+	protected Thread typingThread, displayThread;
 	
 	abstract public void start();
 	abstract public void replay();
@@ -26,7 +24,11 @@ public abstract class AbstractGameStage extends JFrame{
 	public void addScore(int addition){
 		this.currentScore += addition;
 		this.displayPanel.updateScore(currentScore);
-		if(currentScore >= winScore) this.end(); 
+		if(currentScore >= winScore) {
+			this.state = GameState.END;
+			this.end(); 
+		}
+		if(addition > 0) displayPanel.duckSwim();
 	}
 	public int getScore(){
 		return currentScore;
