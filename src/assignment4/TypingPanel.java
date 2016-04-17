@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -17,6 +18,8 @@ import java.util.Scanner;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+
 
 public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	private GameStage gs;
@@ -30,6 +33,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	private int bothKnownCount=0;
 	private int wordY;
 	private BufferedImage knownImg, unknownImg;
+	private PrintWriter writer;
 	public TypingPanel(Rectangle rec, GameStage gs) {
 		// TODO Auto-generated constructor stub
 		this.gs = gs;
@@ -65,9 +69,9 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 			knownMap.put(store[0], store[1]);
 		}
 		int j = 0;
-		System.out.println("Before iterate knownMap");
+		//System.out.println("Before iterate knownMap");
 		for(HashMap.Entry<String, String> entry : knownMap.entrySet()){
-			System.out.println(entry.getKey() + " " + entry.getValue());
+			//System.out.println(entry.getKey() + " " + entry.getValue());
 			knownFilePath[j++] = entry.getKey();
 		}
 		scanner.close();
@@ -84,7 +88,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("yoyo");
+			//System.out.println("yoyo");
 		}
 		scanner = new Scanner(fileInput);
 		j=0;
@@ -114,10 +118,10 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 		super.paintComponent(g);
 		if(isKnownLeft){
 			g.drawImage(knownImg, 10, wordY, null);
-			g.drawImage(unknownImg, 150, wordY, null);
+			g.drawImage(unknownImg, knownImg.getWidth()+20, wordY, null);
 		} else {
 			g.drawImage(unknownImg, 10, wordY, null);
-			g.drawImage(knownImg, gs.getTypingWidth()/2, wordY, null);
+			g.drawImage(knownImg, unknownImg.getWidth()+20, wordY, null);
 		}
 	}
 	@Override
@@ -148,47 +152,66 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getKeyCode()==KeyEvent.VK_ENTER){
-			String line = textField.getText();
-			String[] str = line.split(" ");
-			if(str.length != 2){
-				wordUpdate();
+		if(gs.state==GameState.BEGINNING){
+			if(e.getKeyCode()==KeyEvent.VK_ENTER){
+				gs.state = GameState.RUNNING;
+				gs.start();
+			}
+		} else if(gs.state==GameState.RUNNING){
+			if(e.getKeyCode()==KeyEvent.VK_ENTER){
+				String line = textField.getText();
+				String[] str = line.split(" ");
+				if(str.length != 2){
+					wordUpdate();
+					textField.setText("");
+					return;
+				}
+				if(bothKnownCount > 0){
+					if(knownMap.get(knownFilePath[knownOrder[knownIter-1]]).equals(str[0]) 
+						&& knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
+						bothKnownCount--;
+						gs.addScore(4);
+						
+					} else {
+						Random random = new Random();
+						bothKnownCount = random.nextInt(3)+1;
+					}
+				} else {
+					//System.out.println(str[0] + " " + str[1]);
+					if(isKnownLeft){
+						//System.out.println("KnownLeft: " + knownFilePath[knownOrder[knownIter] ] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
+						if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[0]) ){
+							gs.addScore(4);
+							unknownMap.put(unknownFilePath[unknownOrder[unknownIter]], str[1]);
+						} else {
+							Random random = new Random();
+							bothKnownCount = random.nextInt(3)+1;
+						}
+					} else {
+						//System.out.println("KnownRight: " + knownFilePath[knownOrder[knownIter]] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
+						if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
+							gs.addScore(4);
+							unknownMap.put(unknownFilePath[unknownOrder[unknownIter]], str[0]);
+						} else {
+							Random random = new Random();
+							bothKnownCount = random.nextInt(3)+1;
+						}
+					}
+				}
+				this.wordUpdate();
 				textField.setText("");
-				return;
 			}
-			if(bothKnownCount > 0){
-				if(knownMap.get(knownFilePath[knownOrder[knownIter-1]]).equals(str[0]) 
-					&& knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
-					bothKnownCount--;
-					gs.addScore(5);
-					
-				} else {
-					Random random = new Random();
-					bothKnownCount = random.nextInt(3)+1;
-				}
-			} else {
-				//System.out.println(str[0] + " " + str[1]);
-				if(isKnownLeft){
-					//System.out.println("KnownLeft: " + knownFilePath[knownOrder[knownIter] ] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
-					if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[0]) ){
-						gs.addScore(5);
-					} else {
-						Random random = new Random();
-						bothKnownCount = random.nextInt(3)+1;
-					}
-				} else {
-					//System.out.println("KnownRight: " + knownFilePath[knownOrder[knownIter]] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
-					if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
-						gs.addScore(5);
-					} else {
-						Random random = new Random();
-						bothKnownCount = random.nextInt(3)+1;
-					}
-				}
+		} else if(gs.state==GameState.END){
+			if(e.getKeyChar()==KeyEvent.VK_ENTER){
+				gs.state = GameState.RUNNING;
+				gs.start();
 			}
-			this.wordUpdate();
-			textField.setText("");
+			else if(e.getKeyChar()==KeyEvent.VK_ESCAPE){
+				gs.state = GameState.END;
+				gs.end();
+			}
 		}
+		
 	}
 	@Override
 	public void keyReleased(KeyEvent e) {
@@ -241,6 +264,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	private void wordUpdate_bothKnown()
 	{
 		knownIter++;
+		isKnownLeft = true;
 		if(knownIter >= knownOrder.length){
 			knownIter = 0;
 			shuffleOrder(knownOrder, knownOrder.length);
@@ -263,5 +287,20 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		wordY = 0;
+	}
+	
+	public void outPutUnknownMap()
+	{
+		try {
+			writer = new PrintWriter("unknown_output.txt");
+			for(HashMap.Entry<String, String> entry:unknownMap.entrySet()){
+					writer.println(entry.getKey()+ " " +entry.getValue());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }

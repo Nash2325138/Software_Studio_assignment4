@@ -19,7 +19,7 @@ enum DuckDirection{
 }
 
 public class DisplayPanel extends JPanel implements Runnable {
-	private BufferedImage ballImage, bgImage, winImage;
+	private BufferedImage ballImage, bgImage;
 	private JLabel scoreLabel;
 	private int ballX, bgShiftX;
 	GameStage gs;
@@ -68,7 +68,6 @@ public class DisplayPanel extends JPanel implements Runnable {
 		try{
 			ballImage = ImageIO.read(new File("./materials/res/b.png"));
 			bgImage = ImageIO.read(new File("./materials/res/bg.png"));
-			winImage = ImageIO.read(new File("./materials/res/win.png"));
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
