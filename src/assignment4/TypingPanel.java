@@ -3,8 +3,6 @@ package assignment4;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
@@ -12,7 +10,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -25,11 +22,12 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	private GameStage gs;
 	private String[] knownFilePath, unknownFilePath;
 	private JTextField textField;
-	private HashMap<String, String> knownMap;
+	private HashMap<String, String> knownMap, unknownMap;
 	private int []knownOrder;
 	private int []unknownOrder;
 	private int knownIter=0, unknownIter=0;
-	private boolean isKnownLeft, isBothKnown;
+	private boolean isKnownLeft;
+	private int bothKnownCount=0;
 	private int wordY;
 	private BufferedImage knownImg, unknownImg;
 	public TypingPanel(Rectangle rec, GameStage gs) {
@@ -95,6 +93,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 			unknownFilePath[j++] = scanner.next();
 			//System.out.println(unknownFilePath[j-1]);
 		}
+		unknownMap = new HashMap<String, String>();
 		scanner.close();
 		
 		this.knownOrder = new int[51];
@@ -157,10 +156,15 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 				textField.setText("");
 				return;
 			}
-			if(isBothKnown){
+			if(bothKnownCount > 0){
 				if(knownMap.get(knownFilePath[knownOrder[knownIter-1]]).equals(str[0]) 
 					&& knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
+					bothKnownCount--;
 					gs.addScore(5);
+					
+				} else {
+					Random random = new Random();
+					bothKnownCount = random.nextInt(3)+1;
 				}
 			} else {
 				//System.out.println(str[0] + " " + str[1]);
@@ -168,20 +172,21 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 					//System.out.println("KnownLeft: " + knownFilePath[knownOrder[knownIter] ] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
 					if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[0]) ){
 						gs.addScore(5);
-						this.wordUpdate();
 					} else {
-						this.wordUpdate();
+						Random random = new Random();
+						bothKnownCount = random.nextInt(3)+1;
 					}
 				} else {
 					//System.out.println("KnownRight: " + knownFilePath[knownOrder[knownIter]] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
 					if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
 						gs.addScore(5);
-						this.wordUpdate();
 					} else {
-						this.wordUpdate();
+						Random random = new Random();
+						bothKnownCount = random.nextInt(3)+1;
 					}
 				}
 			}
+			this.wordUpdate();
 			textField.setText("");
 		}
 	}
@@ -204,7 +209,10 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	}
 	private void wordUpdate()
 	{
-		isBothKnown = false;
+		if(bothKnownCount > 0){
+			wordUpdate_bothKnown();
+			return;
+		}
 		knownIter++;
 		unknownIter++;
 		if(knownIter >= knownOrder.length){
@@ -232,7 +240,6 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	}
 	private void wordUpdate_bothKnown()
 	{
-		isBothKnown = true;
 		knownIter++;
 		if(knownIter >= knownOrder.length){
 			knownIter = 0;
