@@ -3,6 +3,7 @@ package assignment4;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 enum DuckDirection{
@@ -18,6 +20,7 @@ enum DuckDirection{
 
 public class DisplayPanel extends JPanel implements Runnable {
 	private BufferedImage ballImage, bgImage, winImage;
+	private JLabel scoreLabel;
 	private int ballX, bgShiftX;
 	GameStage gs;
 	YellowDuck duck;
@@ -69,10 +72,15 @@ public class DisplayPanel extends JPanel implements Runnable {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		
+		scoreLabel = new JLabel("Score 0");
+		scoreLabel.setBounds(new Rectangle(gs.getTypingWidth() + gs.getDisplayWidth() - 150, 0, 180, 80));
+		scoreLabel.setForeground(Color.RED);
+		scoreLabel.setFont(new Font(Font.DIALOG_INPUT, Font.ITALIC, 35));
+
 		this.duck = new YellowDuck(gs);
 		this.duck.setVisible(true);
 		this.add(this.duck);
+		this.add(scoreLabel);
 		
 		bgShiftX = 0;
 		ballX = this.gs.getTypingWidth() + gs.getDisplayWidth() + 100;
@@ -105,5 +113,8 @@ public class DisplayPanel extends JPanel implements Runnable {
 			else if(duck.direction==DuckDirection.DOWN) duck.Y--;
 			duck.repaint();
 		}
+	}
+	public void updateScore(int newScore){
+		scoreLabel.setText("Score " + newScore);
 	}
 }

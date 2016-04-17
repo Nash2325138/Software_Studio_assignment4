@@ -2,6 +2,7 @@ package assignment4;
 
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 public abstract class AbstractGameStage extends JFrame{
 	protected int currentScore, winScore;

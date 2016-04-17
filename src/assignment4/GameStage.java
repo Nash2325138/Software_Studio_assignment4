@@ -3,9 +3,11 @@ package assignment4;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
+import javax.swing.JLabel;
+
 
 public class GameStage extends AbstractGameStage implements Runnable{
-
+	
 	public GameStage() {
 		// TODO Auto-generated constructor stub
 		windowHeight = 500;
@@ -18,7 +20,8 @@ public class GameStage extends AbstractGameStage implements Runnable{
 		
 		typingPanel = new TypingPanel(new Rectangle(0, 0, typingWidth, windowHeight), this);
 		typingPanel.setVisible(true);
-		
+		new Thread(typingPanel).start();
+				
 		this.add(typingPanel);
 		this.add(displayPanel);
 		new Thread(displayPanel).start();
