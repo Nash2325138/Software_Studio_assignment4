@@ -37,7 +37,7 @@ public class DisplayPanel extends JPanel implements Runnable {
 			}
 			X = gs.getDisplayWidth()/2-150;
 			Y = anchorY = 350;
-			System.out.println("YellowDuck constructed");
+			//System.out.println("YellowDuck constructed");
 			direction = DuckDirection.UP;
 			this.setBounds(gs.getTypingWidth() + X, Y, image.getWidth(), image.getHeight());
 			this.setVisible(true);
@@ -47,7 +47,7 @@ public class DisplayPanel extends JPanel implements Runnable {
 		protected void paintComponent(Graphics g) {
 			// TODO Auto-generated method stub
 			super.paintComponent(g);
-			System.out.println("inner paintComponent");
+			//System.out.println("inner paintComponent");
 			this.setBounds(gs.getTypingWidth() + X, Y, image.getWidth(), image.getHeight());
 			g.drawImage(image, 0, 0, null);
 		}
@@ -81,7 +81,7 @@ public class DisplayPanel extends JPanel implements Runnable {
 	protected void paintComponent(Graphics g) {
 		// TODO Auto-generated method stub
 		super.paintComponent(g);
-		System.out.println("Outer paintComponent");
+		//System.out.println("Outer paintComponent");
 		g.drawImage(this.bgImage, gs.getTypingWidth() + bgShiftX, 0, null);
 		g.drawImage(this.ballImage, ballX, duck.anchorY, null);
 		duck.repaint();
