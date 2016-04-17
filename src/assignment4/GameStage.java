@@ -28,12 +28,7 @@ public class GameStage extends AbstractGameStage {
 		
 		this.typingThread = new Thread(typingPanel);
 		this.displayThread = new Thread(displayPanel);
-		
-		try {
-			winImage = ImageIO.read(new File("./materials/res/win.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	
 	}
 	@Override
 	public void start() {
@@ -52,7 +47,7 @@ public class GameStage extends AbstractGameStage {
 	@Override
 	public void end() {
 		// TODO Auto-generated method stub
-
+		typingPanel.outPutUnknownMap();
 	}
 	
 	

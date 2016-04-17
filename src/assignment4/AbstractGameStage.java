@@ -26,7 +26,7 @@ public abstract class AbstractGameStage extends JFrame{
 		this.displayPanel.updateScore(currentScore);
 		if(currentScore >= winScore) {
 			this.state = GameState.END;
-			this.end(); 
+			this.end();
 		}
 		if(addition > 0) displayPanel.duckSwim();
 	}

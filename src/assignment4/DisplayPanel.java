@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,7 +21,7 @@ enum DuckDirection{
 }
 
 public class DisplayPanel extends JPanel implements Runnable {
-	private BufferedImage ballImage, bgImage;
+	private BufferedImage ballImage, bgImage, winImage;
 	private JLabel scoreLabel;
 	private int ballX, bgShiftX;
 	GameStage gs;
@@ -69,7 +70,7 @@ public class DisplayPanel extends JPanel implements Runnable {
 		try{
 			ballImage = ImageIO.read(new File("./materials/res/b.png"));
 			bgImage = ImageIO.read(new File("./materials/res/bg.png"));
-		} catch(IOException e) {
+			winImage = ImageIO.read(new File("./materials/res/win.png"));} catch(IOException e) {
 			e.printStackTrace();
 		}
 		scoreLabel = new JLabel("Score 0");
@@ -92,6 +93,7 @@ public class DisplayPanel extends JPanel implements Runnable {
 		//System.out.println("Outer paintComponent");
 		g.drawImage(this.bgImage, gs.getTypingWidth() + bgShiftX, 0, null);
 		g.drawImage(this.ballImage, ballX, duck.anchorY, null);
+		if(gs.state==GameState.END) g.drawImage(winImage, gs.getTypingWidth(), 0, winImage.getWidth(), winImage.getHeight(), null);
 		duck.repaint();
 	}
 	@Override

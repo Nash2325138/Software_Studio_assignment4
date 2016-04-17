@@ -25,7 +25,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	private GameStage gs;
 	private String[] knownFilePath, unknownFilePath;
 	private JTextField textField;
-	private HashMap<String, String> knownMap, unknownMap;
+	private HashMap<String, String> knownMap, allMap;
 	private int []knownOrder;
 	private int []unknownOrder;
 	private int knownIter=0, unknownIter=0;
@@ -62,11 +62,13 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 		Scanner scanner = new Scanner(fileInput);
 		
 		knownMap = new HashMap<String, String>();
+		allMap = new HashMap<String, String>();
 		while(scanner.hasNext()){
 			String line = scanner.nextLine();
 			//System.out.println(line);
 			String[] store = line.split(" ");
 			knownMap.put(store[0], store[1]);
+			allMap.put(store[0], store[1]);
 		}
 		int j = 0;
 		//System.out.println("Before iterate knownMap");
@@ -97,7 +99,6 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 			unknownFilePath[j++] = scanner.next();
 			//System.out.println(unknownFilePath[j-1]);
 		}
-		unknownMap = new HashMap<String, String>();
 		scanner.close();
 		
 		this.knownOrder = new int[51];
@@ -129,6 +130,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 		// TODO Auto-generated method stub
 		while(true)
 		{
+			if(gs.state==GameState.END) break;
 			try {
 				Thread.sleep(45);
 				if(wordY < this.gs.getHeight() - 70) wordY+=2;
@@ -184,7 +186,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 						//System.out.println("KnownLeft: " + knownFilePath[knownOrder[knownIter] ] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
 						if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[0]) ){
 							gs.addScore(4);
-							unknownMap.put(unknownFilePath[unknownOrder[unknownIter]], str[1]);
+							allMap.put(unknownFilePath[unknownOrder[unknownIter]], str[1]);
 						} else {
 							Random random = new Random();
 							bothKnownCount = random.nextInt(3)+1;
@@ -193,7 +195,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 						//System.out.println("KnownRight: " + knownFilePath[knownOrder[knownIter]] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
 						if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
 							gs.addScore(4);
-							unknownMap.put(unknownFilePath[unknownOrder[unknownIter]], str[0]);
+							allMap.put(unknownFilePath[unknownOrder[unknownIter]], str[0]);
 						} else {
 							Random random = new Random();
 							bothKnownCount = random.nextInt(3)+1;
@@ -205,12 +207,8 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 			}
 		} else if(gs.state==GameState.END){
 			if(e.getKeyChar()==KeyEvent.VK_ENTER){
-				gs.state = GameState.RUNNING;
-				gs.start();
 			}
 			else if(e.getKeyChar()==KeyEvent.VK_ESCAPE){
-				gs.state = GameState.END;
-				gs.end();
 			}
 		}
 		
@@ -295,10 +293,12 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	public void outPutUnknownMap()
 	{
 		try {
-			writer = new PrintWriter("unknown_output.txt");
-			for(HashMap.Entry<String, String> entry:unknownMap.entrySet()){
+			writer = new PrintWriter(new File("output.txt"));
+			System.out.println(allMap.size());
+			for(HashMap.Entry<String, String> entry:allMap.entrySet()){
 					writer.println(entry.getKey()+ " " +entry.getValue());
 			}
+			writer.flush();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
