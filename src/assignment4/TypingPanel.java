@@ -29,7 +29,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	private int []knownOrder;
 	private int []unknownOrder;
 	private int knownIter=0, unknownIter=0;
-	private boolean isKnownLeft;
+	private boolean isKnownLeft, isBothKnown;
 	private int wordY;
 	private BufferedImage knownImg, unknownImg;
 	public TypingPanel(Rectangle rec, GameStage gs) {
@@ -69,7 +69,7 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 		int j = 0;
 		System.out.println("Before iterate knownMap");
 		for(HashMap.Entry<String, String> entry : knownMap.entrySet()){
-			//System.out.println(entry.getKey() + " " + entry.getValue());
+			System.out.println(entry.getKey() + " " + entry.getValue());
 			knownFilePath[j++] = entry.getKey();
 		}
 		scanner.close();
@@ -129,7 +129,10 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 			try {
 				Thread.sleep(45);
 				if(wordY < this.gs.getHeight() - 70) wordY+=2;
-				else wordUpdate();
+				else {
+					wordUpdate();
+					textField.setText("");
+				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -147,6 +150,38 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getKeyCode()==KeyEvent.VK_ENTER){
+			String line = textField.getText();
+			String[] str = line.split(" ");
+			if(str.length != 2){
+				wordUpdate();
+				textField.setText("");
+				return;
+			}
+			if(isBothKnown){
+				if(knownMap.get(knownFilePath[knownOrder[knownIter-1]]).equals(str[0]) 
+					&& knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
+					gs.addScore(5);
+				}
+			} else {
+				//System.out.println(str[0] + " " + str[1]);
+				if(isKnownLeft){
+					//System.out.println("KnownLeft: " + knownFilePath[knownOrder[knownIter] ] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
+					if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[0]) ){
+						gs.addScore(5);
+						this.wordUpdate();
+					} else {
+						this.wordUpdate();
+					}
+				} else {
+					//System.out.println("KnownRight: " + knownFilePath[knownOrder[knownIter]] + " " + knownMap.get(knownFilePath[knownOrder[knownIter]]));
+					if(knownMap.get(knownFilePath[knownOrder[knownIter]]).equals(str[1]) ){
+						gs.addScore(5);
+						this.wordUpdate();
+					} else {
+						this.wordUpdate();
+					}
+				}
+			}
 			textField.setText("");
 		}
 	}
@@ -169,15 +204,57 @@ public class TypingPanel extends JPanel implements KeyListener, Runnable {
 	}
 	private void wordUpdate()
 	{
+		isBothKnown = false;
+		knownIter++;
+		unknownIter++;
+		if(knownIter >= knownOrder.length){
+			knownIter = 0;
+			shuffleOrder(knownOrder, knownOrder.length);
+		}
+		if(unknownIter >= unknownFilePath.length){
+			unknownIter = 0;
+			shuffleOrder(unknownOrder, unknownOrder.length);
+		}
+		
 		try {
-			String path = new String("materials/img/known/" + knownFilePath[knownOrder[knownIter++]]);
+			String path = new String("materials/img/known/" + knownFilePath[knownOrder[knownIter]]);
 			knownImg = ImageIO.read(new File(path));
-			path = new String("materials/img/unknown/" + unknownFilePath[unknownOrder[unknownIter++]]);
+			path = new String("materials/img/unknown/" + unknownFilePath[unknownOrder[unknownIter]]);
 			unknownImg = ImageIO.read(new File(path));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		Random random = new Random();
+		isKnownLeft = random.nextBoolean();
 		wordY = 0;
+	}
+	private void wordUpdate_bothKnown()
+	{
+		isBothKnown = true;
+		knownIter++;
+		if(knownIter >= knownOrder.length){
+			knownIter = 0;
+			shuffleOrder(knownOrder, knownOrder.length);
+		}
+		String path = new String("materials/img/known/" + knownFilePath[knownOrder[knownIter]]);
+		try {
+			knownImg = ImageIO.read(new File(path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		knownIter++;
+		if(knownIter >= knownOrder.length){
+			knownIter = 0;
+			shuffleOrder(knownOrder, knownOrder.length);
+		}
+		path = new String("materials/img/known/" + knownFilePath[knownOrder[knownIter]]);
+		try {
+			unknownImg = ImageIO.read(new File(path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

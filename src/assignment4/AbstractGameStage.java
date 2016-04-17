@@ -14,6 +14,7 @@ public abstract class AbstractGameStage extends JFrame{
 	abstract public void replay();
 	public void addScore(int addition){
 		this.currentScore += addition;
+		this.displayPanel.updateScore(currentScore);
 	}
 	public int getScore(){
 		return currentScore;
